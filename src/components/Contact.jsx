@@ -1,8 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState} from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { Link } from "react-router-dom";
+import { Modal } from "./Modal.jsx";
 
 export const Contact = () => {
   const { store, dispatch } = useGlobalReducer();
+  const [showModal, setShowModal] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
 
   const getContactList = () => {
     fetch("https://playground.4geeks.com/contact/agendas/more/contacts")
@@ -69,14 +73,36 @@ export const Contact = () => {
               </div>
             </div>
 
+           <Link
+             to={`/edit/${item.id}`}
+             className="btn btn-link p-0 text-dark"
+             style={{ fontSize: "1.3rem" }}
+             title="Edit contact"
+             >
+            <i className="fas fa-pencil-alt"></i>
+           </Link>
+
             <button
-              onClick={() => deleteContact(item.id)}
               className="btn btn-link p-0 text-dark"
-              style={{ fontSize: '1.2rem' }}
-              >
+              style={{ fontSize: "1.3rem" }}
+              onClick={() => {
+                setIdToDelete(item.id);
+                setShowModal(true);
+              }}
+            >
               <i className="fas fa-trash me-1"></i>
             </button>
 
+            <Modal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            onConfirm={() => {
+            if (idToDelete) {
+            deleteContact(idToDelete);
+            setShowModal(false);
+          }
+        }}
+      />
           </li>
         ))}
       </ul>
